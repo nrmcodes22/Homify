@@ -31,8 +31,8 @@ export default function Home() {
     setProjects((prev)=>[saved,...prev]);
     navigate(`/visualizer/${newId}`,{
       state:{
-        intialImage:saved.sourceImage,
-        intialRendered:saved.renderedImage || null,
+        initialImage:saved.sourceImage,
+        initialRendered:saved.renderedImage || null,
         name
       }
     });
