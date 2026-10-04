@@ -28,16 +28,23 @@ export default function Home() {
     const newItem={
       id:newId,name,sourceImage:base64Image,renderedImage:undefined,timestamp:Date.now()
     }
-    const saved=await createProject({item:newItem,visibility:'private'});
-    if(!saved){
-      console.error("Failed to create project");
-      return false;
+    let saved: DesignItem | null | undefined = null;
+    try {
+      saved=await createProject({item:newItem,visibility:'private'});
+    } catch (error) {
+      console.error('Project save failed; opening uploaded project anyway.', error);
     }
-    setProjects((prev)=>[saved,...prev]);
+    const project=saved || newItem;
+    if(saved) {
+      setProjects((prev)=>[saved,...prev]);
+    } else {
+      console.error("Project save failed; opening the uploaded project without saved history.");
+    }
     navigate(`/visualizer/${newId}`,{
       state:{
-        initialImage:saved.sourceImage,
-        initialRendered:saved.renderedImage || null,
+        project,
+        initialImage:project.sourceImage,
+        initialRender:project.renderedImage || null,
         name
       }
     });
@@ -111,7 +118,7 @@ export default function Home() {
         <div className="meta">
           <Clock size={12} />
           <span>{new Date(timestamp).toLocaleDateString()}</span>
-          <span>By Nupur</span>
+          <span>By you</span>
         </div>
       </div>
       <div className="arrow">
@@ -128,3 +135,5 @@ export default function Home() {
   
   )
 }
+
+
